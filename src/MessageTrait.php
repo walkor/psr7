@@ -1,5 +1,5 @@
 <?php
-namespace GuzzleHttp\Psr7;
+namespace Workerman\Psr7;
 
 use Psr\Http\Message\StreamInterface;
 
@@ -140,7 +140,7 @@ trait MessageTrait
         return $new;
     }
 
-    private function setHeaders(array $headers)
+    public function setHeaders(array $headers)
     {
         $this->headerNames = $this->headers = [];
         foreach ($headers as $header => $value) {
