@@ -31,9 +31,8 @@ trait MessageTrait
             return $this;
         }
 
-        $new = clone $this;
-        $new->protocol = $version;
-        return $new;
+        $this->protocol = $version;
+        return $this;
     }
 
     public function getHeaders()
@@ -73,14 +72,33 @@ trait MessageTrait
         $value = $this->trimHeaderValues($value);
         $normalized = strtolower($header);
 
-        $new = clone $this;
-        if (isset($new->headerNames[$normalized])) {
-            unset($new->headers[$new->headerNames[$normalized]]);
+        if (isset($this->headerNames[$normalized])) {
+            unset($this->headers[$this->headerNames[$normalized]]);
         }
-        $new->headerNames[$normalized] = $header;
-        $new->headers[$header] = $value;
+        $this->headerNames[$normalized] = $header;
+        $this->headers[$header] = $value;
 
-        return $new;
+        return $this;
+    }
+
+    public function withHeaders(array $headers)
+    {
+        foreach ($headers as $header => $value) {
+            if (!is_array($value)) {
+                $value = [$value];
+            }
+
+            $value = $this->trimHeaderValues($value);
+            $normalized = strtolower($header);
+            if (isset($this->headerNames[$normalized])) {
+                $header = $this->headerNames[$normalized];
+                $this->headers[$header] = array_merge($this->headers[$header], $value);
+            } else {
+                $this->headerNames[$normalized] = $header;
+                $this->headers[$header] = $value;
+            }
+        }
+        return $this;
     }
 
     public function withAddedHeader($header, $value)
@@ -92,16 +110,15 @@ trait MessageTrait
         $value = $this->trimHeaderValues($value);
         $normalized = strtolower($header);
 
-        $new = clone $this;
-        if (isset($new->headerNames[$normalized])) {
+        if (isset($this->headerNames[$normalized])) {
             $header = $this->headerNames[$normalized];
-            $new->headers[$header] = array_merge($this->headers[$header], $value);
+            $this->headers[$header] = array_merge($this->headers[$header], $value);
         } else {
-            $new->headerNames[$normalized] = $header;
-            $new->headers[$header] = $value;
+            $this->headerNames[$normalized] = $header;
+            $this->headers[$header] = $value;
         }
 
-        return $new;
+        return $this;
     }
 
     public function withoutHeader($header)
@@ -114,10 +131,9 @@ trait MessageTrait
 
         $header = $this->headerNames[$normalized];
 
-        $new = clone $this;
-        unset($new->headers[$header], $new->headerNames[$normalized]);
+        unset($this->headers[$header], $this->headerNames[$normalized]);
 
-        return $new;
+        return $this;
     }
 
     public function getBody()
@@ -135,29 +151,13 @@ trait MessageTrait
             return $this;
         }
 
-        $new = clone $this;
-        $new->stream = $body;
-        return $new;
+        $this->stream = $body;
+        return $this;
     }
 
     public function setHeaders(array $headers)
     {
-        $this->headerNames = $this->headers = [];
-        foreach ($headers as $header => $value) {
-            if (!is_array($value)) {
-                $value = [$value];
-            }
-
-            $value = $this->trimHeaderValues($value);
-            $normalized = strtolower($header);
-            if (isset($this->headerNames[$normalized])) {
-                $header = $this->headerNames[$normalized];
-                $this->headers[$header] = array_merge($this->headers[$header], $value);
-            } else {
-                $this->headerNames[$normalized] = $header;
-                $this->headers[$header] = $value;
-            }
-        }
+        return $this->withHeaders($headers);
     }
 
     /**

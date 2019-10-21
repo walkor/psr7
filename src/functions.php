@@ -751,7 +751,6 @@ function mimetype_from_extension($extension)
  * @param string $message HTTP request or response to parse.
  *
  * @return array
- * @internal
  */
 function _parse_message($message)
 {
