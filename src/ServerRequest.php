@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use Workerman\Protocols\Http\Request as WorkermanRequest;
 
 /**
  * Server-side HTTP request
@@ -55,24 +56,17 @@ class ServerRequest extends Request implements ServerRequestInterface
     private $uploadedFiles = [];
 
     /**
-     * @param string                               $method       HTTP method
-     * @param string|UriInterface                  $uri          URI
-     * @param array                                $headers      Request headers
-     * @param string|null|resource|StreamInterface $body         Request body
-     * @param string                               $version      Protocol version
-     * @param array                                $serverParams Typically the $_SERVER superglobal
+     * ServerRequest constructor.
+     * @param string $http_buffer
      */
-    public function __construct(
-        $method,
-        $uri,
-        array $headers = [],
-        $body = null,
-        $version = '1.1',
-        array $serverParams = []
-    ) {
-        $this->serverParams = $serverParams;
-
-        parent::__construct($method, $uri, $headers, $body, $version);
+    public function __construct($http_buffer) {
+        $request = new WorkermanRequest($http_buffer);
+        $this->serverParams = $_SERVER;
+        $this->uploadedFiles = $request->file();
+        $this->queryParams = $request->get();
+        $this->cookieParams = $request->cookie();
+        parent::__construct($request->method(), $request->uri(), $request->header(),
+            $request->rawBody(), $request->protocolVersion());
     }
 
     /**

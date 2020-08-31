@@ -129,4 +129,9 @@ class Response implements ResponseInterface
         $new->reasonPhrase = $reasonPhrase;
         return $new;
     }
+
+    public function __toString()
+    {
+        return response_to_string($this);
+    }
 }

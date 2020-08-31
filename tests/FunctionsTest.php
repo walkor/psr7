@@ -701,7 +701,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
         $r2 = Psr7\modify_request($r1, []);
         $this->assertInstanceOf('GuzzleHttp\Psr7\Request', $r2);
 
-        $r1 = new Psr7\ServerRequest('GET', 'http://foo.com');
+        $r1 = new Psr7\ServerRequest("GET / HTTP/1.0\r\nConnection: Keep-Alive\r\nHost: 127.0.0.1:12345\r\nAccept: */*\r\n\r\n");
         $r2 = Psr7\modify_request($r1, []);
         $this->assertInstanceOf('Psr\Http\Message\ServerRequestInterface', $r2);
     }
@@ -736,7 +736,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
         $r2 = Psr7\modify_request($r1, ['remove_headers' => ['non-existent']]);
         $this->assertInstanceOf('GuzzleHttp\Psr7\Request', $r2);
 
-        $r1 = new Psr7\ServerRequest('GET', 'http://foo.com');
+        $r1 = new Psr7\ServerRequest("GET / HTTP/1.0\r\nConnection: Keep-Alive\r\nHost: 127.0.0.1:12345\r\nAccept: */*\r\n\r\n");
         $r2 = Psr7\modify_request($r1, ['remove_headers' => ['non-existent']]);
         $this->assertInstanceOf('Psr\Http\Message\ServerRequestInterface', $r2);
     }

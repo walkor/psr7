@@ -39,6 +39,36 @@ function str(MessageInterface $message)
     return "{$msg}\r\n\r\n" . $message->getBody();
 }
 
+function response_to_string(ResponseInterface $message)
+{
+    $msg = 'HTTP/' . $message->getProtocolVersion() . ' '
+        . $message->getStatusCode() . ' '
+        . $message->getReasonPhrase();
+    $headers = $message->getHeaders();
+    if (empty($headers)) {
+        $msg .= "\r\nContent-Length: " . $message->getBody()->getSize() .
+            "\r\nContent-Type: text/html\r\nConnection: keep-alive\r\nServer: workerman";
+    } else {
+        if ('' === $message->getHeaderLine('Transfer-Encoding') && '' === $message->getHeaderLine('Content-Length')) {
+            $msg .= "\r\nContent-Length: " . $message->getBody()->getSize();
+        }
+        if ('' === $message->getHeaderLine('Content-Type')) {
+            $msg .= "\r\nContent-Type: text/html";
+        }
+        if ('' === $message->getHeaderLine('Connection')) {
+            $msg .= "\r\nConnection: keep-alive";
+        }
+        if ('' === $message->getHeaderLine('Server')) {
+            $msg .= "\r\nServer: workerman";
+        }
+        foreach ($headers as $name => $values) {
+            $msg .= "\r\n{$name}: " . implode(', ', $values);
+        }
+    }
+
+    return "{$msg}\r\n\r\n" . $message->getBody();
+}
+
 /**
  * Returns a UriInterface for the given value.
  *
