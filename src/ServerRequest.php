@@ -65,7 +65,8 @@ class ServerRequest extends Request implements ServerRequestInterface
         $this->uploadedFiles = $request->file();
         $this->queryParams = $request->get();
         $this->cookieParams = $request->cookie();
-        parent::__construct($request->method(), $request->uri(), $request->header(),
+        $uri = '//' . $request->header('host') . $request->uri();
+        parent::__construct($request->method(), $uri, $request->header(),
             $request->rawBody(), $request->protocolVersion());
     }
 
