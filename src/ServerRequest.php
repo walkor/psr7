@@ -59,14 +59,22 @@ class ServerRequest extends Request implements ServerRequestInterface
      * ServerRequest constructor.
      * @param string $http_buffer
      */
-    public function __construct($http_buffer) {
+    public function __construct($http_buffer)
+    {
         $request = new WorkermanRequest($http_buffer);
         $this->serverParams = $_SERVER;
         $this->uploadedFiles = $request->file();
         $this->queryParams = $request->get();
+        $this->parsedBody = $request->post();
         $this->cookieParams = $request->cookie();
-        parent::__construct($request->method(), $request->uri(), $request->header(),
-            $request->rawBody(), $request->protocolVersion());
+
+        parent::__construct(
+            $request->method(), 
+            $request->uri(), 
+            $request->header(),
+            $request->rawBody(), 
+            $request->protocolVersion()
+        );
     }
 
     /**
