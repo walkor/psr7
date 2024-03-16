@@ -1,6 +1,7 @@
 <?php
 namespace Workerman\Psr7;
 
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -20,12 +21,12 @@ trait MessageTrait
     /** @var StreamInterface */
     private $stream;
 
-    public function getProtocolVersion()
+    public function getProtocolVersion(): string
     {
         return $this->protocol;
     }
 
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version): MessageInterface
     {
         if ($this->protocol === $version) {
             return $this;
@@ -35,17 +36,17 @@ trait MessageTrait
         return $this;
     }
 
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    public function hasHeader($header)
+    public function hasHeader($header): bool
     {
         return isset($this->headerNames[strtolower($header)]);
     }
 
-    public function getHeader($header)
+    public function getHeader($header): array
     {
         $header = strtolower($header);
 
@@ -58,12 +59,12 @@ trait MessageTrait
         return $this->headers[$header];
     }
 
-    public function getHeaderLine($header)
+    public function getHeaderLine($header): string
     {
         return implode(', ', $this->getHeader($header));
     }
 
-    public function withHeader($header, $value)
+    public function withHeader($header, $value): MessageInterface
     {
         if (!is_array($value)) {
             $value = [$value];
@@ -81,7 +82,7 @@ trait MessageTrait
         return $this;
     }
 
-    public function withHeaders(array $headers)
+    public function withHeaders(array $headers): MessageInterface
     {
         foreach ($headers as $header => $value) {
             if (!is_array($value)) {
@@ -101,7 +102,7 @@ trait MessageTrait
         return $this;
     }
 
-    public function withAddedHeader($header, $value)
+    public function withAddedHeader($header, $value): MessageInterface
     {
         if (!is_array($value)) {
             $value = [$value];
@@ -121,7 +122,7 @@ trait MessageTrait
         return $this;
     }
 
-    public function withoutHeader($header)
+    public function withoutHeader($header): MessageInterface
     {
         $normalized = strtolower($header);
 
@@ -136,7 +137,7 @@ trait MessageTrait
         return $this;
     }
 
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         if (!$this->stream) {
             $this->stream = stream_for('');
@@ -145,7 +146,7 @@ trait MessageTrait
         return $this->stream;
     }
 
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): MessageInterface
     {
         if ($body === $this->stream) {
             return $this;
@@ -155,7 +156,7 @@ trait MessageTrait
         return $this;
     }
 
-    public function setHeaders(array $headers)
+    public function setHeaders(array $headers): MessageInterface
     {
         return $this->withHeaders($headers);
     }

@@ -28,7 +28,7 @@ class AppendStream implements StreamInterface
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         try {
             $this->rewind();
@@ -59,7 +59,7 @@ class AppendStream implements StreamInterface
         $this->streams[] = $stream;
     }
 
-    public function getContents()
+    public function getContents(): string
     {
         return copy_to_string($this);
     }
@@ -69,7 +69,7 @@ class AppendStream implements StreamInterface
      *
      * {@inheritdoc}
      */
-    public function close()
+    public function close(): void
     {
         $this->pos = $this->current = 0;
         $this->seekable = true;
@@ -100,7 +100,7 @@ class AppendStream implements StreamInterface
         $this->streams = [];
     }
 
-    public function tell()
+    public function tell(): int
     {
         return $this->pos;
     }
@@ -113,7 +113,7 @@ class AppendStream implements StreamInterface
      *
      * {@inheritdoc}
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         $size = 0;
 
@@ -128,14 +128,14 @@ class AppendStream implements StreamInterface
         return $size;
     }
 
-    public function eof()
+    public function eof(): bool
     {
         return !$this->streams ||
             ($this->current >= count($this->streams) - 1 &&
              $this->streams[$this->current]->eof());
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->seek(0);
     }
@@ -145,7 +145,7 @@ class AppendStream implements StreamInterface
      *
      * {@inheritdoc}
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek(int $offset, int $whence = SEEK_SET): void
     {
         if (!$this->seekable) {
             throw new \RuntimeException('This AppendStream is not seekable');
@@ -179,7 +179,7 @@ class AppendStream implements StreamInterface
      *
      * {@inheritdoc}
      */
-    public function read($length)
+    public function read(int $length): string
     {
         $buffer = '';
         $total = count($this->streams) - 1;
@@ -214,27 +214,27 @@ class AppendStream implements StreamInterface
         return $buffer;
     }
 
-    public function isReadable()
+    public function isReadable(): bool
     {
         return true;
     }
 
-    public function isWritable()
+    public function isWritable(): bool
     {
         return false;
     }
 
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return $this->seekable;
     }
 
-    public function write($string)
+    public function write(string $string): int
     {
         throw new \RuntimeException('Cannot write to an AppendStream');
     }
 
-    public function getMetadata($key = null)
+    public function getMetadata(?string $key = null)
     {
         return $key ? null : [];
     }
